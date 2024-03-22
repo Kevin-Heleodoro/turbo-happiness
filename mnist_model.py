@@ -37,7 +37,7 @@ class MyNetwork(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.log_softmax(x)
+        return F.log_softmax(x, dim=1)
 
 
 # ------ Function Definitions ------  #
@@ -99,6 +99,63 @@ def download_data():
     return train_loader, test_loader
 
 
+# Saves the training data into text files to be used later
+def save_training_data(train_losses, train_counter, test_losses, test_counter):
+    with open("results/mnist2_train_losses.txt", "w") as f:
+        for item in train_losses:
+            f.write(f"{item}\n")
+
+    with open("results/mnist2_train_counter.txt", "w") as f:
+        for item in train_counter:
+            f.write(f"{item}\n")
+
+    with open("results/mnist2_test_losses.txt", "w") as f:
+        for item in test_losses:
+            f.write(f"{item}\n")
+
+    with open("results/mnist2_test_counter.txt", "w") as f:
+        for item in test_counter:
+            f.write(f"{item}\n")
+
+
+def load_training_data():
+    with open("results/mnist2_train_losses.txt", "r") as f:
+        train_losses = [float(line.strip()) for line in f]
+
+    with open("results/mnist2_train_counter.txt", "r") as f:
+        train_counter = [int(line.strip()) for line in f]
+
+    with open("results/mnist2_test_losses.txt", "r") as f:
+        test_losses = [float(line.strip()) for line in f]
+
+    with open("results/mnist2_test_counter.txt", "r") as f:
+        test_counter = [int(line.strip()) for line in f]
+
+    return train_losses, train_counter, test_losses, test_counter
+
+
+def plot_training_curve(train_losses, train_counter, test_losses, test_counter, epochs):
+    fig = plt.figure()
+    plt.plot(train_counter, train_losses, color="blue")
+    plt.scatter(test_counter, test_losses, color="red")
+    plt.legend(["Train Loss", "Test Loss"], loc="upper right")
+    plt.xlabel("# of training examples seen")
+    plt.ylabel("negative log likelihood loss")
+    fig.savefig(f"results/mnist2_training_curve_{epochs}epochs.jpg")
+
+
+def plot_prediction(example_data, output, epochs):
+    fig = plt.figure()
+    for i in range(6):
+        plt.subplot(2, 3, i + 1)
+        plt.tight_layout()
+        plt.imshow(example_data[i][0], cmap="gray", interpolation="none")
+        plt.title(f"Prediction: {output.data.max(1, keepdim=True)[1][i].item()}")
+        plt.xticks([])
+        plt.yticks([])
+    fig.savefig(f"results/mnist2_predictions_{epochs}epochs.jpg")
+
+
 #  ------ Main Code ------  #
 def main():
     train_loader, test_loader = download_data()
@@ -144,13 +201,51 @@ def main():
                 train_counter.append(
                     (batch_idx * 64) + ((epoch - 1) * len(train_loader.dataset))
                 )
-                torch.save(network.state_dict(), "results/mnist_model.pth")
-                torch.save(optimizer.state_dict(), "results/mnist_optimizer.pth")
+                torch.save(network.state_dict(), "results/mnist2_model.pth")
+                torch.save(optimizer.state_dict(), "results/mnist2_optimizer.pth")
 
     test()
     for epoch in range(1, n_epochs + 1):
         train(epoch)
         test()
+
+    save_training_data(train_losses, train_counter, test_losses, test_counter)
+
+    # Plotting the training curve
+    plot_training_curve(
+        train_losses, train_counter, test_losses, test_counter, n_epochs
+    )
+
+    _, (example_data, _) = next(enumerate(test_loader))
+
+    with torch.no_grad():
+        output = network(example_data)
+
+    # Plotting the predictions
+    plot_prediction(example_data, output, n_epochs)
+
+    continued_network = MyNetwork()
+    continued_optimizer = optim.SGD(
+        network.parameters(), lr=learning_rate, momentum=momentum
+    )
+
+    # Load the model
+    network_state_dict = torch.load("results/mnist2_model.pth")
+    continued_network.load_state_dict(network_state_dict)
+
+    # Load the optimizer
+    optimzer_state_dict = torch.load("results/mnist2_optimizer.pth")
+    continued_optimizer.load_state_dict(optimzer_state_dict)
+
+    for i in range(4, 9):
+        test_counter.append(i * len(train_loader.dataset))
+        train(i)
+        test()
+
+    save_training_data(train_losses, train_counter, test_losses, test_counter)
+    plot_training_curve(
+        train_losses, train_counter, test_losses, test_counter, n_epochs + 5
+    )
 
 
 if __name__ == "__main__":

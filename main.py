@@ -71,12 +71,12 @@ def train_model(dataloader, model, loss_fn, optimizer):
 def download_data():
     # Training data
     training_data = datasets.MNIST(
-        root="data", train=True, download=True, transform=ToTensor()
+        root="data/mnist1", train=True, download=True, transform=ToTensor()
     )
 
     # Test data
     test_data = datasets.MNIST(
-        root="data", train=False, download=True, transform=ToTensor()
+        root="data/mnist1", train=False, download=True, transform=ToTensor()
     )
 
     batch_size = 64
@@ -116,13 +116,13 @@ def test_model(dataloader, model, loss_fn):
 
 
 # Save the state of the model locally
-def save_model(model, path="model.pth"):
+def save_model(model, path="results/model.pth"):
     torch.save(model.state_dict(), path)
     print(f"Saved PyTorch Model State to {path}")
 
 
 # Load the model from a local file
-def load_model(path="model.pth"):
+def load_model(path="results/model.pth"):
     model = MyNetwork().to(device)
     model.load_state_dict(torch.load(path))
     return model
