@@ -1,3 +1,5 @@
+# Kevin Heleodoro - MNIST digit recognition using CNN (NextJournal - https://nextjournal.com/gkoehler/pytorch-mnist)
+
 #  ------ Import Statements ------  #
 import torch
 import torch.nn as nn
