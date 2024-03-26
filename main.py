@@ -165,6 +165,7 @@ def save_examples(test_dataloader):
         plt.title(f"Ground Truth: {example_targets[i]}")
         plt.xticks([])
         plt.yticks([])
+
     file_path = "results/main/mnist_example_test_images.png"
     fig.savefig(file_path)
     print(f"Examples saved successfully: {file_path}")
@@ -182,23 +183,29 @@ def train_network(
 
     log_interval = 100
 
-    # Loop through the epochs
-    # for epoch in range(1, n_epochs + 1):
+    # Loop through the training data
     for batch_idx, (data, target) in enumerate(train_dataloader):
-        optimizer.zero_grad()  # Zero the gradients
-        output = network(data)  # Forward pass
-        loss = F.nll_loss(output, target)  # Calculate the loss
-        loss.backward()  # Backward pass
-        optimizer.step()  # Update the weights
+        # Zero the gradients
+        optimizer.zero_grad()
+        # Forward pass
+        output = network(data)
+        # Calculate the loss
+        loss = F.nll_loss(output, target)
+        # Backward pass
+        loss.backward()
+        # Update the weights
+        optimizer.step()
 
         if batch_idx % log_interval == 0:
             print(
                 f"Training Epoch: {epoch} [{batch_idx * len(data)}/{len(train_dataloader.dataset)} ({100. * batch_idx / len(train_dataloader):.0f}%)]\tLoss: {loss.item():.6f}"
             )
+
             train_losses.append(loss.item())
             train_counter.append(
                 (batch_idx * 64) + ((epoch - 1) * len(train_dataloader.dataset))
             )
+
             torch.save(network.state_dict(), "results/main/mnist_model.pth")
             torch.save(optimizer.state_dict(), "results/main/mnist_optimizer.pth")
 
@@ -219,27 +226,46 @@ def test_network(test_dataloader, network, test_losses):
     # No gradient calculation
     with torch.no_grad():
         for data, target in test_dataloader:
-            output = network(data)  # Forward pass
-            test_loss += F.nll_loss(
-                output, target, reduction="sum"
-            ).item()  # Calculate the loss
-            pred = output.data.max(1, keepdim=True)[
-                1
-            ]  # Get the index of the max log-probability
-            correct += pred.eq(
-                target.data.view_as(pred)
-            ).sum()  # Calculate the number of correct predictions
+            # Forward pass
+            output = network(data)
+            # Calculate the loss
+            test_loss += F.nll_loss(output, target, reduction="sum").item()
+            # Get the index of the max log-probability
+            pred = output.data.max(1, keepdim=True)[1]
+            # Calculate the number of correct predictions
+            correct += pred.eq(target.data.view_as(pred)).sum()
 
     test_loss /= len(test_dataloader.dataset)
     test_losses.append(test_loss)
+
     print(
         f"\nTest set: Avg loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_dataloader.dataset)} ({100. * correct / len(test_dataloader.dataset):.2f}%)\n"
     )
 
 
+# Plot the training curve
+def plt_training_curve(
+    train_losses, train_counter, test_losses, test_counter, n_epochs
+):
+    print_border()
+    print("Plotting the training curve...")
+
+    fig = plt.figure()
+    plt.plot(train_counter, train_losses, color="pink")
+    plt.scatter(test_counter, test_losses, color="green")
+    plt.legend(["Train Loss", "Test Loss"], loc="upper right")
+    plt.xlabel("number of training examples seen")
+    plt.ylabel("negative log likelihood loss")
+    plt.title("MNIST CNN Training Curve")
+    plt.tight_layout()
+    plt.savefig("results/main/mnist_cnn_training_curve.png")
+    print("Training curve plotted successfully")
+
+
 # ------ Main Code ------  #
 
 
+# Main function - MNIST digit recognition using CNN
 def main():
     print_border()
     print("\nMNIST digit recognition using CNN\n")
@@ -251,7 +277,7 @@ def main():
     if args.download:
         train_dataloader, test_dataloader = load_data()
 
-    # Save examples from the test data
+    # Save first 6 examples from the test data
     if args.save_example:
         save_examples(test_dataloader)
 
@@ -292,6 +318,9 @@ def main():
                 epoch,
             )
             test_network(test_dataloader, network, test_losses)
+
+    # Plot the training curve
+    plt_training_curve(train_losses, train_counter, test_losses, test_counter, n_epochs)
 
     return
 

@@ -70,3 +70,13 @@ Epoch 4:
 Epoch 5:
 
 > `Test set: Avg loss: 0.0566, Accuracy: 9866/10000 (99%)`
+
+### network_test.py
+
+Loading the `state_dict` that was saved from main.py to test on the first 10 example images from the MNIST testing dataset.
+
+Results from the command line:
+![](/results/main/mnist_prediction_cli.png)
+
+Results in a figure
+![](/results/main/predicted_images.png)
