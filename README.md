@@ -36,6 +36,12 @@ To execute the network test on handwritten numbers run the following command:
 python network_test.py --custom True --directory "data/custom"
 ```
 
+To examine the network architecture run the following command:
+
+```sh
+python examine_network.py
+```
+
 ## Task 1
 
 [Tutorial on setting up dnn using PyTorch and MNIST dataset](https://pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html)
@@ -214,3 +220,104 @@ Switched to using `torchvision.transforms.v2` per [PyTorch's recommendation](htt
 ## Task 2
 
 Examining the network using `examine_network.py`.
+
+```sh
+Model loaded from:  results/main/mnist_model.pth
+MyNetwork(
+  (conv1): Conv2d(1, 10, kernel_size=(5, 5), stride=(1, 1))
+  (conv2): Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+  (dropout): Dropout(p=0.5, inplace=False)
+  (fc1): Linear(in_features=320, out_features=50, bias=True)
+  (fc2): Linear(in_features=50, out_features=10, bias=True)
+)
+```
+
+Convolution layer 1 filters:
+![](results/main/task_2/conv1_filters.png)
+
+Filters applied to first image in training set:
+![](results/main/task_2/conv1_filters_to_image_1.png)
+
+## Task 3
+
+Transfer learning on Greek Letters
+
+First iteration using 5 epochs, 0.01 learning rate, 0.5 momentum:
+
+```sh
+Training the network...
+Running pre-training test...
+
+Test set: Average loss: 1.0932, Accuracy: 3/9 (33.33%)
+
+Train Epoch: 1 [0/27 (0%)]	Loss: 1.047323
+Train Epoch: 1 [5/27 (17%)]	Loss: 1.050199
+Train Epoch: 1 [10/27 (33%)]	Loss: 0.820251
+Train Epoch: 1 [15/27 (50%)]	Loss: 1.310539
+Train Epoch: 1 [20/27 (67%)]	Loss: 0.773852
+Train Epoch: 1 [10/27 (83%)]	Loss: 1.201905
+Training complete
+
+Test set: Average loss: 0.9173, Accuracy: 5/9 (55.56%)
+
+Train Epoch: 2 [0/27 (0%)]	Loss: 0.728469
+Train Epoch: 2 [5/27 (17%)]	Loss: 0.714651
+Train Epoch: 2 [10/27 (33%)]	Loss: 0.916280
+Train Epoch: 2 [15/27 (50%)]	Loss: 0.836977
+Train Epoch: 2 [20/27 (67%)]	Loss: 0.761337
+Train Epoch: 2 [10/27 (83%)]	Loss: 0.794498
+Training complete
+
+Test set: Average loss: 0.8028, Accuracy: 7/9 (77.78%)
+
+Train Epoch: 3 [0/27 (0%)]	Loss: 0.642418
+Train Epoch: 3 [5/27 (17%)]	Loss: 0.516627
+Train Epoch: 3 [10/27 (33%)]	Loss: 0.601593
+Train Epoch: 3 [15/27 (50%)]	Loss: 0.645809
+Train Epoch: 3 [20/27 (67%)]	Loss: 0.531400
+Train Epoch: 3 [10/27 (83%)]	Loss: 0.764568
+Training complete
+
+Test set: Average loss: 0.7297, Accuracy: 7/9 (77.78%)
+
+Train Epoch: 4 [0/27 (0%)]	Loss: 0.474293
+Train Epoch: 4 [5/27 (17%)]	Loss: 0.405608
+Train Epoch: 4 [10/27 (33%)]	Loss: 0.442747
+Train Epoch: 4 [15/27 (50%)]	Loss: 0.739589
+Train Epoch: 4 [20/27 (67%)]	Loss: 0.396530
+Train Epoch: 4 [10/27 (83%)]	Loss: 0.572971
+Training complete
+
+Test set: Average loss: 0.6900, Accuracy: 7/9 (77.78%)
+
+Train Epoch: 5 [0/27 (0%)]	Loss: 0.482386
+Train Epoch: 5 [5/27 (17%)]	Loss: 0.478900
+Train Epoch: 5 [10/27 (33%)]	Loss: 0.384140
+Train Epoch: 5 [15/27 (50%)]	Loss: 0.351912
+Train Epoch: 5 [20/27 (67%)]	Loss: 0.307006
+Train Epoch: 5 [10/27 (83%)]	Loss: 0.445835
+Training complete
+
+Test set: Average loss: 0.6486, Accuracy: 7/9 (77.78%)
+```
+
+Increasing the number of epochs to 10 and then 20 resulted in a lower accuracy score.
+
+Reduced learning rate to 0.1 and momentum to 0.8 which cut the average loss down by ~50%.
+
+```sh
+Train Epoch: 5 [0/27 (0%)]	Loss: 0.008052
+Train Epoch: 5 [5/27 (17%)]	Loss: 0.026820
+Train Epoch: 5 [10/27 (33%)]	Loss: 0.010399
+Train Epoch: 5 [15/27 (50%)]	Loss: 0.006687
+Train Epoch: 5 [20/27 (67%)]	Loss: 0.014652
+Train Epoch: 5 [10/27 (83%)]	Loss: 0.002258
+Training complete
+
+Test set: Average loss: 0.1444, Accuracy: 8/9 (88.89%)
+```
+
+**Results varied from 7-8/9 correct answer**
+
+The Training curve does not follow any kind of pattern or have any consistency between runs.
+![](results/main/task_3/greek_training_curve.png)
