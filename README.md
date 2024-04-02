@@ -321,3 +321,7 @@ Test set: Average loss: 0.1444, Accuracy: 8/9 (88.89%)
 
 The Training curve does not follow any kind of pattern or have any consistency between runs.
 ![](results/main/task_3/greek_training_curve.png)
+
+## Task 4
+
+Using the [pytorch tutorial](https://pytorch.org/tutorials/beginner/introyt/trainingyt.html?highlight=nn%20crossentropyloss) as a starting point for the MNIST Fasion dataset Network
