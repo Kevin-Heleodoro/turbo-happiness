@@ -14,7 +14,7 @@ from main import MyNetwork, print_border
 
 learning_rate = 0.1
 momentum = 0.8
-n_epochs = 5
+n_epochs = 8
 
 # ----- Class Definitions --------  #
 
@@ -150,6 +150,7 @@ def main():
     network = MyNetwork()
     model_path = "results/main/mnist_model.pth"
     network.load_state_dict(torch.load(model_path))
+    print(f"Before: {network}")
 
     # Freeze network weights
     print_border()
@@ -163,6 +164,7 @@ def main():
     in_features = network.fc2.in_features
     network.fc2 = torch.nn.Linear(in_features, 3)
     network.fc2.requires_grad = True
+    print(f"After: {network}")
 
     # Load the Greek letters dataset
     print_border()

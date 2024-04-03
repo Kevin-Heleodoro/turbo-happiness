@@ -242,6 +242,31 @@ Filters applied to first image in training set:
 
 Transfer learning on Greek Letters
 
+```sh
+Before: MyNetwork(
+  (conv1): Conv2d(1, 10, kernel_size=(5, 5), stride=(1, 1))
+  (conv2): Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+  (dropout): Dropout(p=0.5, inplace=False)
+  (fc1): Linear(in_features=320, out_features=50, bias=True)
+  (fc2): Linear(in_features=50, out_features=10, bias=True)
+)
+
+--------------------------------------------------
+
+Freezing the network weights...
+
+--------------------------------------------------
+
+Replacing the last layer with a new layer with three nodes...
+After: MyNetwork(
+  (conv1): Conv2d(1, 10, kernel_size=(5, 5), stride=(1, 1))
+  (conv2): Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+  (dropout): Dropout(p=0.5, inplace=False)
+  (fc1): Linear(in_features=320, out_features=50, bias=True)
+  (fc2): Linear(in_features=50, out_features=3, bias=True)
+)
+```
+
 First iteration using 5 epochs, 0.01 learning rate, 0.5 momentum:
 
 ```sh
@@ -303,7 +328,7 @@ Test set: Average loss: 0.6486, Accuracy: 7/9 (77.78%)
 
 Increasing the number of epochs to 10 and then 20 resulted in a lower accuracy score.
 
-Reduced learning rate to 0.1 and momentum to 0.8 which cut the average loss down by ~50%.
+Increased learning rate to 0.1 and momentum to 0.8 which cut the average loss down by ~70%.
 
 ```sh
 Train Epoch: 5 [0/27 (0%)]	Loss: 0.008052
@@ -317,6 +342,20 @@ Training complete
 Test set: Average loss: 0.1444, Accuracy: 8/9 (88.89%)
 ```
 
+100% accuracy at 7 epochs
+
+```sh
+Train Epoch: 7 [0/27 (0%)]	Loss: 0.008647
+Train Epoch: 7 [5/27 (17%)]	Loss: 0.038618
+Train Epoch: 7 [10/27 (33%)]	Loss: 0.156512
+Train Epoch: 7 [15/27 (50%)]	Loss: 0.253824
+Train Epoch: 7 [20/27 (67%)]	Loss: 0.027097
+Train Epoch: 7 [10/27 (83%)]	Loss: 0.010680
+Training complete
+
+Test set: Average loss: 0.0885, Accuracy: 9/9 (100.00%)
+```
+
 **Results varied from 7-8/9 correct answer**
 
 The Training curve does not follow any kind of pattern or have any consistency between runs.
@@ -325,3 +364,143 @@ The Training curve does not follow any kind of pattern or have any consistency b
 ## Task 4
 
 Using the [pytorch tutorial](https://pytorch.org/tutorials/beginner/introyt/trainingyt.html?highlight=nn%20crossentropyloss) as a starting point for the MNIST Fasion dataset Network
+
+[Medium article on mnist data training](https://medium.com/@aaysbt/fashion-mnist-data-training-using-pytorch-7f6ad71e96f4)
+
+1. First complete run of network training and testing.
+
+-   Epochs: 5
+-   Batch Size: 4
+-   Mean: 0.5
+-   Standard Deviation: 0.5
+-   Learning Rate: 0.01
+-   Momentum = 0.5
+-   Optimizer = SGD
+
+    `Test set (Epoch 1) - Avg loss: -7.7286, Accuracy: 8476/10000 (84.76%)`
+    `Test set (Epoch 2) - Avg loss: -9.2962, Accuracy: 8661/10000 (86.61%)`
+    `Test set (Epoch 3) - Avg loss: -10.2659, Accuracy: 8603/10000 (86.03%)`
+    `Test set (Epoch 4) - Avg loss: -10.4695, Accuracy: 8908/10000 (89.08%)`
+    `Test set (Epoch 5) - Avg loss: -11.2641, Accuracy: 8894/10000 (88.94%)`
+
+2. Increasing batch size to 64, dropping epochs to 3
+
+Run: `python mnist_fashion.py --batchsize 64 --epochs 3`
+
+-   Epochs: 3
+-   Batch Size: 64
+-   Mean: 0.5
+-   Standard Deviation: 0.5
+-   Learning Rate: 0.01
+-   Momentum = 0.5
+-   Optimizer = SGD
+
+    `Test set (Epoch 1) - Avg loss: -7.1970, Accuracy: 8635/10000 (86.35%)`
+    `Test set (Epoch 2) - Avg loss: -9.0490, Accuracy: 8819/10000 (88.19%)`
+    `Test set (Epoch 3) - Avg loss: -10.6499, Accuracy: 8823/10000 (88.23%)`
+
+3. Decreasing learning rate to 0.001
+
+Run: `python mnist_fashion.py --batchsize 64 --epochs 3 --learningrate 0.001`
+
+-   Epochs: 3
+-   Batch Size: 64
+-   Mean: 0.5
+-   Standard Deviation: 0.5
+-   Learning Rate: 0.001
+-   Momentum = 0.5
+-   Optimizer = SGD
+
+`Test set (Epoch 1) - Avg loss: -6.5420, Accuracy: 7662/10000 (76.62%)`
+`Test set (Epoch 2) - Avg loss: -7.7808, Accuracy: 8315/10000 (83.15%)`
+`Test set (Epoch 3) - Avg loss: -7.6608, Accuracy: 8497/10000 (84.97%)`
+
+1. Using Adam optimizer
+
+Information on Adam optimizer found in [blog](https://www.kaggle.com/code/pankajj/fashion-mnist-with-pytorch-93-accuracy) and [documentation](https://pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam)
+
+Run: `python mnist_fashion.py --batchsize 64 --epochs 3 --optimizer Adam`
+
+-   Epochs: 3
+-   Batch Size: 64
+-   Mean: 0.5
+-   Standard Deviation: 0.5
+-   Learning Rate: 1e-3
+-   Momentum = 0.5
+-   Optimizer = Adam
+
+`Test set (Epoch 1) - Avg loss: 0.0083, Accuracy: 1000/10000 (10.00%)`
+`Test set (Epoch 2) - Avg loss: 0.0232, Accuracy: 1000/10000 (10.00%)`
+`Test set (Epoch 3) - Avg loss: 0.0375, Accuracy: 1000/10000 (10.00%)`
+
+5. Using RMS optimizer
+
+Run: `python mnist_fashion.py --batchsize 64 --epochs 3 --optimizer RMS`
+
+-   Epochs: 3
+-   Batch Size: 64
+-   Mean: 0.5
+-   Standard Deviation: 0.5
+-   Learning Rate: 1e-3
+-   Momentum = 0.5
+-   Optimizer = RMS
+
+_Need to ensure that the loss functions are correct for RMS and Adam_
+
+6. Modifying the neural network
+
+Original fashion network:
+
+```sh
+FashionNetwork(
+  (conv1): Conv2d(1, 6, kernel_size=(5, 5), stride=(1, 1))
+  (pool): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (conv2): Conv2d(6, 16, kernel_size=(5, 5), stride=(1, 1))
+  (fc1): Linear(in_features=256, out_features=120, bias=True)
+  (fc2): Linear(in_features=120, out_features=84, bias=True)
+  (fc3): Linear(in_features=84, out_features=10, bias=True)
+)
+
+def forward(self, x):
+    x = self.pool(F.relu(self.conv1(x)))
+    x = self.pool(F.relu(self.conv2(x)))
+    x = x.view(-1, 16 * 4 * 4)
+    x = F.relu(self.fc1(x))
+    x = F.relu(self.fc2(x))
+    x = self.fc3(x)
+    return x
+```
+
+Updated fashion network:
+
+```sh
+FashionNetwork2(
+  (conv1): Conv2d(1, 10, kernel_size=(5, 5), stride=(1, 1))
+  (conv2): Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+  (dropout): Dropout(p=0.5, inplace=False)
+  (fc1): Linear(in_features=320, out_features=50, bias=True)
+  (fc2): Linear(in_features=50, out_features=10, bias=True)
+)
+
+def forward(self, x):
+    x = F.relu(F.max_pool2d(self.conv1(x), 2))
+    x = F.relu(F.max_pool2d(self.dropout(self.conv2(x)), 2))
+    x = x.view(-1, 320)
+    x = F.relu(self.fc1(x))
+    x = self.fc2(x)
+    return F.log_softmax(x, dim=1)
+```
+
+Run: `python mnist_fashion.py --batchsize 64 --epochs 3`
+
+-   Epochs: 3
+-   Batch Size: 64
+-   Mean: 0.5
+-   Standard Deviation: 0.5
+-   Learning Rate: 0.01
+-   Momentum = 0.5
+-   Optimizer = SGD
+
+### Task 4 automated
+
+After getting a general idea of the different dimensions to choose from, I will be focusing on adjusting the number of epochs, the dropout rates of the Dropout layer, the batch size while training.
