@@ -2,8 +2,11 @@
 
 Kevin Heleodoro
 March 21, 2024
+[Repo Link](https://github.com/Kevin-Heleodoro/turbo-happiness/tree/main)
 
 ## Instructions:
+
+### Main.py
 
 To execute network training run the following command:
 
@@ -30,6 +33,8 @@ options:
                         Train the network using the MNIST dataset
 ```
 
+### Network_test.py
+
 To execute the network test on handwritten numbers run the following command:
 
 ```sh
@@ -40,6 +45,20 @@ To examine the network architecture run the following command:
 
 ```sh
 python examine_network.py
+```
+
+### Greek_letters.py
+
+```sh
+python greek_letters.py
+```
+
+### MNIST_fasion.py
+
+Run the following command for automated training/testing evaluation
+
+```sh
+python mnist_fashion.py --auto-train True
 ```
 
 ## Task 1
@@ -504,3 +523,5 @@ Run: `python mnist_fashion.py --batchsize 64 --epochs 3`
 ### Task 4 automated
 
 After getting a general idea of the different dimensions to choose from, I will be focusing on adjusting the number of epochs, the dropout rates of the Dropout layer, the batch size while training.
+
+Run: `python mnist_fashion.py --auto-train True`

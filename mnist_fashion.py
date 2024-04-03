@@ -318,9 +318,9 @@ def run_main_loop(total_epochs, dropout_rate, batch_size, args, network_choice=1
     train_loader, test_loader, classes = download_dataset(batch_size)
 
     # Display data
-    # print_border()
-    # print("Displaying the MNIST Fashion dataset...")
-    # matplot_make_grid(train_loader)
+    print_border()
+    print("Displaying the MNIST Fashion dataset...")
+    matplot_make_grid(train_loader)
 
     # Load the network
     print_border()
